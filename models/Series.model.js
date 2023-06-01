@@ -1,17 +1,26 @@
 const { Schema, model } = require("mongoose");
 
-const seriesSchema = new Schema({
-  title: { type: String, required: true },
-  image: { type: String },
-  actorList: [{ type: String }],
-  imDbrating: { type: number, required: true },
-  plot: { type: String, required: true },
-  director: { type: String, required: true },
-  runtime: { type: number, required: true },
-  year: { type: String, required: true },
-  awards: { type: String, required: true },
-  genre: [{ type: String, required: true }],
-  user: { type: Schema.Types.ObjectId, ref: "User" },
+const serieSchema = new Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  year: {
+    type: String,
+    required: true,
+  },
+  image: {
+    type: String,
+  },
+  crew: {
+    type: String,
+    required: true,
+  },
+  imDbRating: {
+    type: String,
+  },
 });
 
-module.exports = model("Series", seriesSchema);
+const Series = model("Serie", serieSchema);
+
+module.exports = Series;

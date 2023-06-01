@@ -1,42 +1,48 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const axios = require('axios');
+const Series = require("../models/Series.model");
 
-const API_URL = 'https://imdb-api.com/en/API/MostPopularTVs/k_67u23d3j/';
+const seriesData = require("../Bin/series.json"); // Import series data from JSON file
 
-let seriesData = null; // Variable to store the fetched movies data
-
-// Fetch movies data on server startup
-axios.get(API_URL)
-  .then(response => {
-    seriesData = response.data;
-    console.log('Series data fetched successfully');
-  })
-  .catch(error => {
-    console.error('Error fetching Series data:', error);
-  });
-
-// Route handler to get all Series
-router.get('/Series', (req, res) => {
+// Route handler to get all series
+router.get("/series", (req, res) => {
   if (seriesData) {
     res.json(seriesData);
   } else {
-    res.status(500).json({ error: 'Series data not available' });
+    res.status(500).json({ error: "serie data not available" });
   }
 });
 
 // Route handler to get a specific movie by ID
-router.get('Series/:id', (req, res) => {
-  const seriesId = req.params.id;
+router.get("/series/:id", (req, res) => {
+  const serieId = req.params.id;
   if (seriesData) {
-    const serie = seriesData.find(series => series.id === seriesId);
+    const serie = seriesData.find((serie) => serie.id === serieId);
     if (serie) {
       res.json(serie);
     } else {
-      res.status(404).json({ error: 'serie not found' });
+      res.status(404).json({ error: "serie not found" });
     }
   } else {
-    res.status(500).json({ error: 'Serie data not available' });
+    res.status(500).json({ error: "serie data not available" });
+  }
+});
+
+// Route handler to add more series to the database
+router.post("/series", async (req, res) => {
+  const { title, year, crew } = req.body;
+
+  try {
+    // Create a new serie
+    let newSerie = await Series.create({
+      title,
+      year,
+      crew,
+    });
+
+    res.json(newSerie);
+  } catch (error) {
+    res.json(error);
   }
 });
 
