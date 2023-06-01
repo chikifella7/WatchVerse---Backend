@@ -188,9 +188,9 @@ Components:
    plot: {type: String, required: true}
    directors: {type: String, required: true}
    runtimeMinutes: {type: number, required: true}
-   year: {type: number, required: true}
+   year: {type: String, required: true}
    awards: {type: String, required: true}
-   genres: {type: String, required: true}
+   genres: [{type: String, required: true}]
    user: {type: Schema.Types.ObjectId, ref:'User'}
  }
 ```
@@ -208,13 +208,18 @@ Components:
    plot: {type: String, required: true}
    directors: {type: String, required: true}
    runtimeMinutes: {type: number, required: true}
-   year: {type: number, required: true}
+   year: {type: String, required: true}
    awards: {type: String, required: true}
-   genres: {type: String, required: true}
+   genres: [{type: String, required: true}]
    user: {type: Schema.Types.ObjectId, ref:'User'}
  }
 ```
 **Reviews model**
+```javascript 
+ {content: String,
+  rating: Number,
+  user: { type: Schema.Types.ObjectId, ref: "User" },
+}
 
 
 
