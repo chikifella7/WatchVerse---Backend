@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Movies = require("../models/Movies.model");
+const Movie = require("../models/Movies.model");
 
 const moviesData = require("../Bin/movies.json"); // Import movies data from JSON file
 
@@ -44,6 +44,42 @@ router.post("/movies", async (req, res) => {
   } catch (error) {
     res.json(error);
   }
+});
+
+// PUT '/api/movies/:id' route to Update a Movie
+router.put("/movies/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, year, crew } = req.body;
+
+  try {
+    // Find the Movie by ID and Update its fields
+    let updatedMovie = await Movie.findByIdAndUpdate(
+      id,
+      { title, year, crew },
+      { new: true }
+    );
+
+    res.json(updatedMovie);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+// DELETE '/api/movies/:id' route to Delete a Task
+router.delete('/movies/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Find the Movie by ID and Delete it
+        let deletedMovie = await Movie.findByIdAndDelete(id);
+
+        // Remove the Movie reference from the corresponding List
+        await Movie.findByIdAndUpdate(deletedMovie, { $pull: { movies: id } });
+
+        res.json(deletedMovie);
+    } catch (error) {
+        res.json(error);
+    }
 });
 
 module.exports = router;
