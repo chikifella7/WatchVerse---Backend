@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Series = require("../models/Series.model");
-
+const Review = require("../models/Reviews.model");
 const seriesData = require("../Bin/series.json"); // Import series data from JSON file
 
 // Route handler to get all series
@@ -80,6 +80,50 @@ router.delete('/series/:id', async (req, res) => {
     } catch (error) {
         res.json(error);
     }
+});
+
+// Rota para adicionar uma nova review a um filme
+router.post("/series/:id/reviews", async (req, res) => {
+  const { id } = req.params;
+  const { content, rating, user } = req.body;
+
+  try {
+    const series = await Series.findById(id);
+
+    if (!series) {
+      return res.status(404).json({ error: "Movie Not Found" });
+    }
+
+    const newReview = await Review.create({
+      content,
+      rating,
+      user /* : req.payload._id */,
+    });
+    
+    series.reviews.push(newReview);
+    await series.save();
+
+    res.json(newReview);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+// Rota para obter as reviews de um filme específico
+router.get("/series/:id/reviews", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const series = await Series.findById(id).populate("reviews");
+
+    if (!series) {
+      return res.status(404).json({ error: "Movie Not Found" });
+    }
+
+    res.json(series.reviews);
+  } catch (error) {
+    res.json(error);
+  }
 });
 
 module.exports = router;

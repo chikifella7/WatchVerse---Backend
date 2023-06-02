@@ -16,6 +16,12 @@ const movieSchema = new Schema({
   imDbRating: {
     type: String,
   },
+  reviews: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Review",
+    },
+  ],
 });
 
 const Movies = model("Movies", movieSchema);
