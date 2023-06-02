@@ -126,8 +126,64 @@ router.get("/movies/:id/reviews", async (req, res) => {
   }
 });
 
-// PUT '/api/movies/:id/review' route to update a Review
+// PUT '/api/movies/:movieId/reviews/:reviewId' route to update a Review
+router.put("/movies/:movieId/reviews/:reviewId", async (req, res) => {
+  const { movieId, reviewId } = req.params;
+  const { content, rating, user } = req.body;
 
-// DELETE '/api/movies/:id/review' route to delete a Review
+  try {
+    const movie = await Movie.findById(movieId);
+
+    if (!movie) {
+      return res.status(404).json({ error: "Movie not found" });
+    }
+
+    const review = await Review.findById(reviewId);
+
+    if (!review) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    review.content = content;
+    review.rating = rating;
+    review.user = user;
+
+    const updatedReview = await review.save();
+
+    res.json(updatedReview);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+// DELETE '/api/movies/:movieId/reviews/:reviewId' route to delete a Review
+router.delete("/movies/:movieId/reviews/:reviewId", async (req, res) => {
+  const { movieId, reviewId } = req.params;
+
+  try {
+    const movie = await Movie.findById(movieId);
+
+    if (!movie) {
+      return res.status(404).json({ error: "Movie not found" });
+    }
+
+    const review = await Review.findById(reviewId);
+
+    if (!review) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    await Review.findByIdAndDelete(reviewId);
+    movie.reviews.pull(reviewId);
+    await movie.save();
+
+    res.json({ message: "Review deleted successfully" });
+  } catch (error) {
+    res.json(error);
+  }
+});
 
 module.exports = router;
+
+
+

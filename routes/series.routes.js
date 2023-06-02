@@ -70,7 +70,7 @@ router.delete('/series/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        // Find the Movie by ID and Delete it
+        // Find the series by ID and Delete it
         let deletedSeries = await Series.findByIdAndDelete(id);
 
         // Remove the Series reference from the corresponding List
@@ -91,7 +91,7 @@ router.post("/series/:id/reviews", async (req, res) => {
     const series = await Series.findById(id);
 
     if (!series) {
-      return res.status(404).json({ error: "Movie Not Found" });
+      return res.status(404).json({ error: "series Not Found" });
     }
 
     const newReview = await Review.create({
@@ -117,10 +117,67 @@ router.get("/series/:id/reviews", async (req, res) => {
     const series = await Series.findById(id).populate("reviews");
 
     if (!series) {
-      return res.status(404).json({ error: "Movie Not Found" });
+      return res.status(404).json({ error: "series Not Found" });
     }
 
     res.json(series.reviews);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+// PUT '/api/series/:seriesId/reviews/:reviewId' route to update a Review
+router.put("/series/:seriesId/reviews/:reviewId", async (req, res) => {
+  const { seriesId, reviewId } = req.params;
+  const { content, rating, user } = req.body;
+
+  try {
+    const series = await Series.findById(seriesId);
+
+    if (!series) {
+      return res.status(404).json({ error: "series not found" });
+    }
+
+    const review = await Review.findById(reviewId);
+    
+    if (!review) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    review.content = content;
+    review.rating = rating;
+    review.user = user;
+
+    const updatedReview = await review.save();
+    
+    res.json(updatedReview);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+// DELETE '/api/series/:seriesId/reviews/:reviewId' route to delete a Review
+router.delete("/series/:seriesId/reviews/:reviewId", async (req, res) => {
+  const { seriesId, reviewId } = req.params;
+
+  try {
+    const series = await Series.findById(seriesId);
+
+    if (!series) {
+      return res.status(404).json({ error: "series not found" });
+    }
+
+    const review = await Review.findById(reviewId);
+
+    if (!review) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    await Review.findByIdAndDelete(reviewId);
+    series.reviews.pull(reviewId);
+    await series.save();
+
+    res.json({ message: "Review deleted successfully" });
   } catch (error) {
     res.json(error);
   }
