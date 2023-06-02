@@ -18,6 +18,6 @@ const movieSchema = new Schema({
   },
 });
 
-const Movies = model("Movie", movieSchema);
+const Movies = model("Movies", movieSchema);
 
 module.exports = Movies;
