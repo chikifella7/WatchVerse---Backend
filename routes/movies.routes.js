@@ -65,7 +65,7 @@ router.put("/movies/:id", async (req, res) => {
   }
 });
 
-// DELETE '/api/movies/:id' route to Delete a Task
+// DELETE '/api/movies/:id' route to Delete a Movie
 router.delete("/movies/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -82,7 +82,7 @@ router.delete("/movies/:id", async (req, res) => {
   }
 });
 
-// Rota para adicionar uma nova review a um filme
+// POST '/api/movies/:id/reviews' route to Delete a Review
 router.post("/movies/:id/reviews", async (req, res) => {
   const { id } = req.params;
   const { content, rating, user } = req.body;
@@ -109,7 +109,7 @@ router.post("/movies/:id/reviews", async (req, res) => {
   }
 });
 
-// Rota para obter as reviews de um filme específico
+// GET '/api/movies/:id/reviews' route to view Reviews
 router.get("/movies/:id/reviews", async (req, res) => {
   const { id } = req.params;
 

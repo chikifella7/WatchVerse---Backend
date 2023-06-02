@@ -33,7 +33,7 @@ router.post("/series", async (req, res) => {
   const { title, year, crew } = req.body;
 
   try {
-    // Create a new serie
+    // Create a new series
     let newSerie = await Series.create({
       title,
       year,
@@ -82,7 +82,7 @@ router.delete('/series/:id', async (req, res) => {
     }
 });
 
-// Rota para adicionar uma nova review a um filme
+// POST '/api/series/:id/reviews' route to post a new review
 router.post("/series/:id/reviews", async (req, res) => {
   const { id } = req.params;
   const { content, rating, user } = req.body;
@@ -109,7 +109,7 @@ router.post("/series/:id/reviews", async (req, res) => {
   }
 });
 
-// Rota para obter as reviews de um filme específico
+// GET '/api/series/:id/reviews' route to get a specific review
 router.get("/series/:id/reviews", async (req, res) => {
   const { id } = req.params;
 
