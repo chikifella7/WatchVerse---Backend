@@ -36,7 +36,7 @@ router.post("/movies", async (req, res) => {
 
   try {
     // Create a new movie
-    let newMovie = await Movies.create({
+    let newMovie = await Movie.create({
       title,
       year,
       crew,
