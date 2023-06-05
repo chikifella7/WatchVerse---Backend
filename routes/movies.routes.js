@@ -5,26 +5,28 @@ const Review = require("../models/Reviews.model");
 const moviesData = require("../Bin/movies.json"); // Import movies data from JSON file
 
 // Route handler to get all movies
-router.get("/movies", (req, res) => {
-  if (moviesData) {
-    res.json(moviesData);
-  } else {
-    res.status(500).json({ error: "Movie data not available" });
+router.get("/movies", async (req, res) => {
+  try {
+    const movies = await Movie.find();
+    res.json(movies);
+  } catch (error) {
+    console.log(error);
   }
 });
 
 // Route handler to get a specific movie by ID
-router.get("/movies/:id", (req, res) => {
-  const movieId = req.params.id;
-  if (moviesData) {
-    const movie = moviesData.find((movie) => movie.id === movieId);
+router.get("/movies/:movieId", async (req, res) => {
+  try {
+    const { movieId } = req.params;
+
+    const movie = await Movie.findById(movieId);
     if (movie) {
       res.json(movie);
     } else {
       res.status(404).json({ error: "Movie not found" });
     }
-  } else {
-    res.status(500).json({ error: "Movie data not available" });
+  } catch (error) {
+    console.log(error);
   }
 });
 
@@ -99,7 +101,7 @@ router.post("/movies/:id/reviews", async (req, res) => {
       rating,
       user /* : req.payload._id */,
     });
-    
+
     movie.reviews.push(newReview);
     await movie.save();
 
@@ -184,6 +186,3 @@ router.delete("/movies/:movieId/reviews/:reviewId", async (req, res) => {
 });
 
 module.exports = router;
-
-
-
