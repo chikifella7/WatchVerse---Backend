@@ -5,26 +5,28 @@ const Review = require("../models/Reviews.model");
 const seriesData = require("../Bin/series.json"); // Import series data from JSON file
 
 // Route handler to get all series
-router.get("/series", (req, res) => {
-  if (seriesData) {
-    res.json(seriesData);
-  } else {
-    res.status(500).json({ error: "serie data not available" });
+router.get("/series", async (req, res) => {
+  try {
+    const series = await Series.find();
+    res.json(series);
+  } catch (error) {
+    console.log(error);
   }
 });
 
-// Route handler to get a specific Series by ID
-router.get("/series/:id", (req, res) => {
-  const serieId = req.params.id;
-  if (seriesData) {
-    const serie = seriesData.find((serie) => serie.id === serieId);
-    if (serie) {
-      res.json(serie);
+// Route handler to get a specific series by ID
+router.get("/series/:seriesId", async (req, res) => {
+  try {
+    const { seriesId } = req.params;
+
+    const series = await Series.findById(seriesId);
+    if (series) {
+      res.json(series);
     } else {
-      res.status(404).json({ error: "serie not found" });
+      res.status(404).json({ error: "series not found" });
     }
-  } else {
-    res.status(500).json({ error: "serie data not available" });
+  } catch (error) {
+    console.log(error);
   }
 });
 
