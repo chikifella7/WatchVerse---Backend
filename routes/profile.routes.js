@@ -2,7 +2,7 @@ const router = require("express").Router();
 const User = require("../models/User.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
-router.get("/profile/:id", /* isAuthenticated, */ async (req, res, next) => {
+router.get("/profile/:id",  isAuthenticated,  async (req, res, next) => {
   const { id } = req.params;
 
   try {
@@ -18,7 +18,7 @@ router.get("/profile/:id", /* isAuthenticated, */ async (req, res, next) => {
   }
 });
 
-router.put("/profile/:id", /* isAuthenticated, */ async (req, res, next) => {
+router.put("/profile/:id",  isAuthenticated,  async (req, res, next) => {
   const { id } = req.params;
   const { name, profilePhoto } = req.body;
 

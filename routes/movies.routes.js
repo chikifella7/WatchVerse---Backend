@@ -4,6 +4,23 @@ const Movie = require("../models/Movies.model");
 const Review = require("../models/Reviews.model");
 const moviesData = require("../Bin/movies.json"); // Import movies data from JSON file
 
+const fileUploader = require("../config/cloudinary.config");
+
+// POST "/api/upload" => Route that receives the image, sends it to Cloudinary via the fileUploader and returns the image URL
+router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
+  // console.log("file is: ", req.file)
+ 
+  if (!req.file) {
+    next(new Error("No file uploaded!"));
+    return;
+  }
+  
+  // Get the URL of the uploaded file and send it as a response.
+  // 'fileUrl' can be any name, just make sure you remember to use the same when accessing it on the frontend
+  
+  res.json({ fileUrl: req.file.path });
+});
+
 // Route handler to get all movies
 router.get("/movies", async (req, res) => {
   try {
@@ -84,7 +101,7 @@ router.delete("/movies/:id", async (req, res) => {
   }
 });
 
-// POST '/api/movies/:id/reviews' route to Delete a Review
+// POST '/api/movies/:id/reviews' route to Create a Review
 router.post("/movies/:id/reviews", async (req, res) => {
   const { id } = req.params;
   const { content, rating, user } = req.body;
@@ -96,11 +113,7 @@ router.post("/movies/:id/reviews", async (req, res) => {
       return res.status(404).json({ error: "Movie Not Found" });
     }
 
-    const newReview = await Review.create({
-      content,
-      rating,
-      user /* : req.payload._id */,
-    });
+    const newReview = await Review.create({content, rating, user});
 
     movie.reviews.push(newReview);
     await movie.save();
@@ -184,5 +197,23 @@ router.delete("/movies/:movieId/reviews/:reviewId", async (req, res) => {
     res.json(error);
   }
 });
+
+router.get("/movies", async (req, res) => {
+  const { year } = req.query;
+
+  try {
+    let movies;
+    if (year) {
+      movies = await Movie.find({ year: year });
+    } else {
+      movies = await Movie.find();
+    }
+    res.json(movies);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 
 module.exports = router;

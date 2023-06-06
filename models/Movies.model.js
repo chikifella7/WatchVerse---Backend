@@ -16,6 +16,9 @@ const movieSchema = new Schema({
   imDbRating: {
     type: String,
   },
+  genre: {
+    type: [{ String }],
+  },
   reviews: [
     {
       type: Schema.Types.ObjectId,

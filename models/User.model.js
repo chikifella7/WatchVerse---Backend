@@ -32,18 +32,19 @@ const userSchema = new Schema(
     likedSeries: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Movies",
+        ref: "Series",
       },
     ],
     watchedSeries: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Movies",
+        ref: "Series",
       },
     ],
-    profilePhoto:[{
-      type: String,
-    }]
+    imageUrl: 
+      {
+        type: String,
+      }
   },
   {
     timestamps: true,

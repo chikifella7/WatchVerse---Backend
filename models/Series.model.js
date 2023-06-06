@@ -14,7 +14,6 @@ const serieSchema = new Schema({
   },
   crew: {
     type: String,
-    required: true,
   },
   imDbRating: {
     type: String,
