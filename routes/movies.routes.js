@@ -7,17 +7,17 @@ const moviesData = require("../Bin/movies.json"); // Import movies data from JSO
 const fileUploader = require("../config/cloudinary.config");
 
 // POST "/api/upload" => Route that receives the image, sends it to Cloudinary via the fileUploader and returns the image URL
-router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
+router.post("/upload", fileUploader.single("image"), async (req, res, next) => {
   // console.log("file is: ", req.file)
- 
+
   if (!req.file) {
     next(new Error("No file uploaded!"));
     return;
   }
-  
+
   // Get the URL of the uploaded file and send it as a response.
   // 'fileUrl' can be any name, just make sure you remember to use the same when accessing it on the frontend
-  
+
   res.json({ fileUrl: req.file.path });
 });
 
@@ -36,7 +36,7 @@ router.get("/movies/:movieId", async (req, res) => {
   try {
     const { movieId } = req.params;
 
-    const movie = await Movie.findById(movieId);
+    const movie = await Movie.findById(movieId).populate("reviews");
     if (movie) {
       res.json(movie);
     } else {
@@ -49,7 +49,7 @@ router.get("/movies/:movieId", async (req, res) => {
 
 // Route handler to add more movies to the database
 router.post("/movies", async (req, res) => {
-  const { title, year, crew } = req.body;
+  const { title, year, crew, image } = req.body;
 
   try {
     // Create a new movie
@@ -57,6 +57,7 @@ router.post("/movies", async (req, res) => {
       title,
       year,
       crew,
+      image,
     });
 
     res.json(newMovie);
@@ -113,7 +114,9 @@ router.post("/movies/:id/reviews", async (req, res) => {
       return res.status(404).json({ error: "Movie Not Found" });
     }
 
-    const newReview = await Review.create({content, rating, user});
+    const newReview = await Review.create({ content, rating, user });
+
+    await newReview.save();
 
     movie.reviews.push(newReview);
     await movie.save();
@@ -215,5 +218,17 @@ router.get("/movies", async (req, res) => {
   }
 });
 
+router.get("/movies", (req, res) => {
+  const searchTerm = req.query.search;
+
+  Movie.find({ title: { $regex: searchTerm, $options: "i" } })
+    .then((movies) => {
+      res.json(movies);
+    })
+    .catch((error) => {
+      console.log("Error searching movies:", error);
+      res.status(500).json({ error: "Internal server error" });
+    });
+});
 
 module.exports = router;
